@@ -1,0 +1,4 @@
+Staff Record: John Doe - Manager
+Department: Administration
+
+Amna Tariq - Jr. Lecturer

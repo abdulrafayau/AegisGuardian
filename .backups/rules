@@ -1,0 +1,6 @@
+Hash mismatches must be reported to department.
+1. ACCESS: Department records are restricted to authorized CS faculty and cleared admin staff only.
+2. DATA SECURITY: All sensitive files must remain in the designated Department_Docs directory.
+3. CREDENTIALS: Never share system passwords, shadow backup keys, or OTPs with unauthorized personnel.
+4. INTEGRITY: Any manual modification of financial or staff records outside the Guardian system is strictly prohibited.
+5. INCIDENTS: Suspected unauthorized access or hash mismatches must be reported to the IT Security Team immediately.

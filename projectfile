@@ -1,0 +1,122 @@
+# Project Walkthrough: Department File Guardian (v5.0)
+
+This document provides a complete overview of the finalized C++ project.
+
+## 🏗️ Architecture
+The project follows a modular, object-oriented design:
+- **Inheritance**: `Admin` and `Staff` classes inherit from the `User` base class.
+- **Polymorphism**: Used to manage user sessions and role-based permissions.
+- **Data Integrity**: Implements a custom Blockchain hash-linking system.
+
+## 📁 Source Code Carousels
+
+````carousel
+```cpp
+// Hasher.h - The Cyber Algorithm
+#ifndef HASHER_H
+#define HASHER_H
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+
+class Hasher {
+public:
+    static std::string calculateFileHash(const std::string& path) {
+        std::ifstream file(path, std::ios::binary);
+        if (!file) return "ERROR";
+        unsigned long hash = 5381;
+        char buffer[4096];
+        while (file.read(buffer, sizeof(buffer)) || file.gcount() > 0) {
+            std::streamsize bytes = file.gcount();
+            for (int i = 0; i < bytes; i++) {
+                hash = ((hash << 5) + hash) + static_cast<unsigned char>(buffer[i]);
+                hash ^= (hash >> 3);
+            }
+        }
+        std::stringstream ss;
+        ss << std::hex << std::setw(8) << std::setfill('0') << hash;
+        return ss.str();
+    }
+    static std::string calculateStringHash(const std::string& input) {
+        unsigned long hash = 5381;
+        for (char c : input) {
+            hash = ((hash << 5) + hash) + static_cast<unsigned char>(c);
+            hash ^= (hash >> 3);
+        }
+        std::stringstream ss;
+        ss << std::hex << std::setw(8) << std::setfill('0') << hash;
+        return ss.str();
+    }
+};
+#endif
+```
+<!-- slide -->
+```cpp
+// User.h - OOP Inheritance & Roles
+#ifndef USER_H
+#define USER_H
+#include <string>
+#include "Hasher.h"
+
+class User {
+protected:
+    std::string username, passwordHash, role;
+public:
+    User(std::string name, std::string pass, std::string r) : username(name), role(r) {
+        passwordHash = Hasher::calculateStringHash(pass);
+    }
+    virtual ~User() {}
+    std::string getUsername() const { return username; }
+    std::string getRole() const { return role; }
+    bool authenticate(const std::string& pass) const {
+        return Hasher::calculateStringHash(pass) == passwordHash;
+    }
+    virtual bool canAccessAdminTools() const = 0; 
+};
+
+class Admin : public User {
+public:
+    Admin(std::string name, std::string pass) : User(name, pass, "ADMIN") {}
+    bool canAccessAdminTools() const override { return true; }
+};
+
+class Staff : public User {
+public:
+    Staff(std::string name, std::string pass) : User(name, pass, "STAFF") {}
+    bool canAccessAdminTools() const override { return false; }
+};
+#endif
+```
+<!-- slide -->
+```cpp
+// Guardian.h - Core Security Logic
+#ifndef GUARDIAN_H
+#define GUARDIAN_H
+#include <vector>
+#include <fstream>
+#include <filesystem>
+#include "FileBlock.h"
+#include "Utils.h"
+
+namespace fs = std::filesystem;
+
+class Guardian {
+    // ... Logic for Blockchain, Backups, and OTP ...
+    // (See full file in workspace)
+};
+#endif
+```
+````
+
+## 🎓 Final Marks Checklist
+- [x] **Inheritance**: `Admin` -> `User`
+- [x] **Polymorphism**: Virtual functions in `User`
+- [x] **Encapsulation**: Private hashes and file structures
+- [x] **File I/O**: Binary hashing and Ledger persistence
+- [x] **Advanced Algorithm**: Blockchain linking logic
+
+## 📦 How to Submit
+1.  Zip all the `.h` and `.cpp` files.
+2.  Include the `README.md` for the UML diagram.
+3.  Include a sample `Department_Docs` folder with a few text files.
