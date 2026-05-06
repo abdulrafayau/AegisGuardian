@@ -2,3 +2,4 @@ Staff Record: John Doe - Manager
 Department: Administration
 
 Amna Tariq - Jr. Lecturer
+Saif ur Rehman - Assistant Professor 

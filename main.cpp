@@ -1,63 +1,96 @@
 #include "Guardian.h"
-#include "User.h"
+#include "UserManager.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
 
 using namespace std;
 
-User* currentUser = nullptr;
-vector<User*> users;
-
-void setupUsers() {
-    users.push_back(new Admin("admin", "admin123"));
-    users.push_back(new Staff("staff", "staff123"));
-}
+UserManager userMgr;
 
 void showBanner() {
-    Utils::setColor(Utils::CYAN);
-    cout << "  " << setfill('-') << setw(48) << "-" << "\n";
-    cout << "     " << left << setw(43) << setfill(' ') << "DEPARTMENT FILE GUARDIAN & DEFENDER (v5.0)" << "\n";
-    cout << "     " << left << setw(43) << "Role-Based Access Control (RBAC) Active" << "\n";
-    cout << "  " << setfill('-') << setw(48) << "-" << setfill(' ') << "\n";
-    if (currentUser) {
-        Utils::setColor(Utils::YELLOW);
-        cout << "  Logged in as: " << left << setw(15) << currentUser->getUsername() 
-             << " [" << currentUser->getRole() << "]\n";
+    Utils::printBanner();
+    if (userMgr.getCurrentUser()) {
+        Utils::setColor(Utils::CYAN);
+        cout << "  [ACTIVE SESSION] ";
+        Utils::setColor(Utils::BOLD);
+        cout << userMgr.getCurrentUser()->getUsername();
+        Utils::setColor(Utils::CYAN);
+        cout << " (" << userMgr.getCurrentUser()->getRole() << ")\n";
+        Utils::reset();
     }
-    Utils::reset();
 }
 
-bool login() {
+bool handleLogin() {
     Utils::clear();
     showBanner();
     string name, pass;
-    cout << "\n  --- SYSTEM LOGIN ---\n";
+    cout << "\n  --- SECURE SYSTEM LOGIN ---\n";
     cout << "  " << left << setw(10) << "Username:" << " "; cin >> name;
     cout << "  " << left << setw(10) << "Password:" << " "; cin >> pass;
 
-    for (auto u : users) {
-        if (u->getUsername() == name && u->authenticate(pass)) {
-            currentUser = u;
-            return true;
-        }
+    if (userMgr.login(name, pass)) {
+        Utils::printSuccess("Authentication Successful. Terminal Access Granted.");
+        system("pause");
+        return true;
     }
-    Utils::printError("Invalid username or password!");
+    Utils::printError("Invalid Credentials. Access Denied.");
     system("pause");
     return false;
+}
+
+void handleSignup() {
+    Utils::clear();
+    showBanner();
+    string name, pass, role;
+    int roleChoice;
+    cout << "\n  --- IDENTITY REGISTRATION ---\n";
+    cout << "  " << left << setw(10) << "Username:" << " "; cin >> name;
+    cout << "  " << left << setw(10) << "Password:" << " "; cin >> pass;
+    
+    Utils::setColor(Utils::YELLOW);
+    cout << "  Select Designation:\n";
+    cout << "  1. [ADMIN] Full System Control\n";
+    cout << "  2. [STAFF] Document Operations Only\n";
+    cout << "  Choice: "; 
+    Utils::reset();
+    cin >> roleChoice;
+    
+    role = (roleChoice == 1) ? "ADMIN" : "STAFF";
+
+    if (role == "ADMIN") {
+        string secret;
+        cout << "  Enter System Secret Key: ";
+        cin >> secret;
+        if (secret != "guardian2026") {
+            Utils::printError("Authorization Failed. Admin registration aborted.");
+            system("pause");
+            return;
+        }
+    }
+
+    if (userMgr.registerUser(name, pass, role)) {
+        Utils::printSuccess("Account Registered Successfully!");
+    } else {
+        Utils::printError("Identity Conflict: Username already taken.");
+    }
+    system("pause");
 }
 
 int selectFile(Guardian& guardian) {
     auto files = guardian.getFileList();
     if (files.empty()) {
-        Utils::printWarning("No documents found.");
+        Utils::printWarning("Vault is empty. No documents found.");
         return -1;
     }
+    Utils::setColor(Utils::BLUE);
+    cout << "  --- SECURE DOCUMENT VAULT ---\n";
+    Utils::reset();
     for(size_t i = 0; i < files.size(); ++i) {
-        cout << "  " << right << setw(2) << i + 1 << ". " << left << files[i] << "\n";
+        cout << "  [" << right << setw(2) << i + 1 << "] " << left << files[i] << "\n";
     }
     int fIndex; 
-    cout << "  Select file: "; 
+    cout << "\n  Select index (0 to cancel): "; 
     cin >> fIndex;
     if (fIndex > 0 && fIndex <= (int)files.size()) return fIndex - 1;
     return -1;
@@ -73,88 +106,140 @@ string getMultilineInput() {
 
 int main() {
     Utils::setupConsole();
-    setupUsers();
     Guardian guardian;
     int choice;
 
-    while (!login());
-
-    guardian.loadLedger();
-
     while (true) {
-        Utils::clear();
-        showBanner();
-        
-        cout << "  " << right << setw(2) << "1." << " " << left << "Verify Documents (Check for Breach)\n";
-        cout << "  " << right << setw(2) << "2." << " " << left << "View Document (Secure Viewer)\n";
-        cout << "  " << right << setw(2) << "3." << " " << left << "Authorized Data Entry (Bulk Paste + OTP)\n";
-        cout << "  " << right << setw(2) << "4." << " " << left << "Authorized New Document (Bulk Create + OTP)\n";
-        
-        if (currentUser->canAccessAdminTools()) {
-            Utils::setColor(Utils::MAGENTA);
-            cout << "  " << right << setw(2) << "5." << " " << left << "[ADMIN] Initialize / Re-Seal System\n";
-            cout << "  " << right << setw(2) << "6." << " " << left << "[ADMIN] Self-Healing (Restore Backups)\n";
+        if (!userMgr.getCurrentUser()) {
+            Utils::clear();
+            showBanner();
+            Utils::setColor(Utils::BOLD);
+            cout << "\n  1. Login to Vault\n  2. Register Identity\n  3. Terminate Session\n\n";
             Utils::reset();
-        }
-
-        cout << "  " << right << setw(2) << "7." << " " << left << "Help / Info\n";
-        cout << "  " << right << setw(2) << "8." << " " << left << "Logout / Switch User\n";
-        cout << "  " << right << setw(2) << "9." << " " << left << "Exit\n";
-        cout << "\n  Select Option: ";
-        
-        if (!(cin >> choice)) {
-            cin.clear();
-            cin.ignore(1000, '\n');
+            cout << "  Select Choice: ";
+            if (!(cin >> choice)) {
+                cin.clear(); cin.ignore(1000, '\n'); continue;
+            }
+            if (choice == 1) handleLogin();
+            else if (choice == 2) handleSignup();
+            else if (choice == 3) return 0;
             continue;
         }
 
+        guardian.loadLedger();
+        User* currentUser = userMgr.getCurrentUser();
+
+        Utils::clear();
+        showBanner();
+        
+        Utils::setColor(Utils::MAGENTA);
+        cout << "\n  --- DOCUMENT MANAGEMENT SYSTEM ---\n";
+        Utils::reset();
+        cout << "  1.  Explore Vault & View\n";
+        cout << "  2.  Search Content (Deep Scan)\n";
+        cout << "  3.  Verify System Integrity\n";
+        
+        Utils::setColor(Utils::CYAN);
+        cout << "\n  --- MODIFICATION TOOLS ---\n";
+        Utils::reset();
+        cout << "  4.  New Document (Create/Paste)\n";
+        cout << "  5.  Append Data (Update)\n";
+        cout << "  6.  Replace Data (Overwrite)\n";
+        cout << "  7.  Rename Document\n";
+        
+        if (currentUser->canAccessAdminTools()) {
+            Utils::setColor(Utils::RED);
+            cout << "\n  --- ADMINISTRATIVE TOOLS ---\n";
+            Utils::reset();
+            cout << "  8.  Delete Document\n";
+            cout << "  9.  Self-Healing (Restore)\n";
+            cout << "  10. Re-Seal System (Re-initialize)\n";
+            cout << "  11. View Audit Logs\n";
+        }
+
+        Utils::setColor(Utils::WHITE);
+        cout << "\n  --- SESSION ---\n";
+        Utils::reset();
+        cout << "  12. Security Info\n";
+        cout << "  13. Logout\n";
+        cout << "  14. Exit\n";
+        cout << "\n  Command >> ";
+        
+        if (!(cin >> choice)) {
+            cin.clear(); cin.ignore(1000, '\n'); continue;
+        }
+
         switch (choice) {
-            case 1: 
-                guardian.verify(); 
-                break;
-            case 2: {
+            case 1: {
                 int idx = selectFile(guardian);
                 if (idx != -1) guardian.viewFile(guardian.getFileList()[idx]);
                 break;
             }
-            case 3: {
+            case 2: {
+                string query;
+                cout << "  Enter Scan Query: "; cin.ignore(); getline(cin, query);
+                guardian.searchContent(query);
+                break;
+            }
+            case 3: guardian.verify(); break;
+            case 4: {
+                string filename; 
+                cout << "  Target Filename: "; cin >> filename;
+                cout << "  Enter Content (Ctrl+Z -> Enter to Finish):\n";
+                guardian.addNewFile(filename, getMultilineInput());
+                break;
+            }
+            case 5: {
                 int idx = selectFile(guardian);
                 if (idx != -1) {
-                    cout << "  Enter text to add (press Ctrl+Z then Enter to finish):\n";
+                    cout << "  Enter Data to Append (Ctrl+Z -> Enter to Finish):\n";
                     guardian.authorizedUpdate(guardian.getFileList()[idx], getMultilineInput());
                 }
                 break;
             }
-            case 4: {
-                string filename; 
-                cout << "  Enter name: "; 
-                cin >> filename;
-                cout << "  Enter content (press Ctrl+Z then Enter to finish):\n";
-                guardian.addNewFile(filename, getMultilineInput());
+            case 6: {
+                int idx = selectFile(guardian);
+                if (idx != -1) {
+                    cout << "  Enter New Content (Ctrl+Z -> Enter to Finish):\n";
+                    guardian.authorizedOverwrite(guardian.getFileList()[idx], getMultilineInput());
+                }
                 break;
             }
-            case 5:
-                if (currentUser->canAccessAdminTools()) guardian.initialize();
-                else Utils::printError("ACCESS DENIED: Admins only.");
+            case 7: {
+                int idx = selectFile(guardian);
+                if (idx != -1) {
+                    string newName;
+                    cout << "  New Filename: "; cin >> newName;
+                    guardian.authorizedRename(guardian.getFileList()[idx], newName);
+                }
                 break;
-            case 6:
-                if (currentUser->canAccessAdminTools()) guardian.restoreAll();
-                else Utils::printError("ACCESS DENIED: Admins only.");
-                break;
-            case 7:
-                Utils::printHeader("SECURITY INFO");
-                cout << "  " << left << setw(10) << "Role:" << currentUser->getRole() << "\n";
-                cout << "  " << left << setw(10) << "Access:" << (currentUser->canAccessAdminTools() ? "Full Control" : "Limited") << "\n";
-                break;
+            }
             case 8:
-                currentUser = nullptr;
-                while (!login());
+                if (currentUser->canAccessAdminTools()) {
+                    int idx = selectFile(guardian);
+                    if (idx != -1) guardian.authorizedDelete(guardian.getFileList()[idx]);
+                } else Utils::printError("Restricted Operation: Admins only.");
                 break;
             case 9:
-                for (auto u : users) delete u;
-                return 0;
-            default: 
-                cout << "  Invalid choice.\n";
+                if (currentUser->canAccessAdminTools()) guardian.restoreAll();
+                else Utils::printError("Restricted Operation: Admins only.");
+                break;
+            case 10:
+                if (currentUser->canAccessAdminTools()) guardian.initialize();
+                else Utils::printError("Restricted Operation: Admins only.");
+                break;
+            case 11:
+                if (currentUser->canAccessAdminTools()) AuditLogger::getInstance().viewLogs();
+                else Utils::printError("Restricted Operation: Admins only.");
+                break;
+            case 12:
+                Utils::printHeader("SECURITY CLEARANCE");
+                cout << "  Active Role: " << currentUser->getRole() << "\n";
+                cout << "  Permissions: " << (currentUser->canAccessAdminTools() ? "LEVEL 4 (SUPERUSER)" : "LEVEL 2 (STAFF)") << "\n";
+                break;
+            case 13: userMgr.logout(); break;
+            case 14: return 0;
+            default: cout << "  Invalid Command.\n";
         }
         system("pause");
     }

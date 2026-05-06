@@ -13,37 +13,37 @@ private:
     std::string prevBlockHash;
     std::string ownBlockHash;
     time_t timestamp;
+    std::string identifier;
 
 public:
-    FileBlock(std::string name, uintmax_t size, std::string fHash, std::string pHash) 
-        : filename(name), fileSize(size), fileHash(fHash), prevBlockHash(pHash) {
+    FileBlock(std::string name, uintmax_t size, std::string fHash, std::string pHash, std::string id = "Unknown") 
+        : filename(name), fileSize(size), fileHash(fHash), prevBlockHash(pHash), identifier(id) {
         timestamp = std::time(nullptr);
         generateOwnHash();
     }
 
-    // Default constructor for serialization
-    FileBlock() : fileSize(0), timestamp(0) {}
+    FileBlock() : fileSize(0), timestamp(0), identifier("Unknown") {}
 
     void generateOwnHash() {
-        // The block hash is a combination of everything in the block
-        // This creates the "link" in the blockchain
-        std::string data = filename + std::to_string(fileSize) + fileHash + prevBlockHash;
+        std::string data = filename + std::to_string(fileSize) + fileHash + prevBlockHash + std::to_string(timestamp) + identifier;
         ownBlockHash = Hasher::calculateStringHash(data);
     }
 
-    // Getters
     std::string getFilename() const { return filename; }
     std::string getFileHash() const { return fileHash; }
     std::string getOwnBlockHash() const { return ownBlockHash; }
     std::string getPrevBlockHash() const { return prevBlockHash; }
     uintmax_t getFileSize() const { return fileSize; }
+    time_t getTimestamp() const { return timestamp; }
+    std::string getIdentifier() const { return identifier; }
 
-    // For file I/O
     void setFilename(std::string val) { filename = val; }
     void setFileSize(uintmax_t val) { fileSize = val; }
     void setFileHash(std::string val) { fileHash = val; }
     void setPrevBlockHash(std::string val) { prevBlockHash = val; }
     void setOwnBlockHash(std::string val) { ownBlockHash = val; }
+    void setTimestamp(time_t val) { timestamp = val; }
+    void setIdentifier(std::string val) { identifier = val; }
 };
 
 #endif

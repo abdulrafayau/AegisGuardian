@@ -1,0 +1,13 @@
+[Wed May 06 20:22:17 2026] USER: SYSTEM | ACTION: Initialized default users
+[Wed May 06 20:22:36 2026] USER: admin | ACTION: Logged in successfully
+[Wed May 06 20:25:42 2026] USER: adminrafay | ACTION: Logged in successfully
+[Wed May 06 20:27:06 2026] USER: SYSTEM | ACTION: Integrity check passed
+[Wed May 06 20:27:52 2026] USER: USER | ACTION: Created document: hi.txt
+[Wed May 06 20:28:52 2026] USER: SYSTEM | ACTION: Integrity breach detected!
+[Wed May 06 20:29:25 2026] USER: ADMIN | ACTION: System-wide restore performed
+[Wed May 06 20:29:40 2026] USER: ADMIN | ACTION: System-wide restore performed
+[Wed May 06 20:29:43 2026] USER: ADMIN | ACTION: System-wide restore performed
+[Wed May 06 20:29:45 2026] USER: ADMIN | ACTION: System-wide restore performed
+[Wed May 06 20:30:38 2026] USER: adminrafay | ACTION: Logged out
+[Wed May 06 20:31:08 2026] USER: adminhadia | ACTION: Account registered as ADMIN
+[Wed May 06 20:31:23 2026] USER: adminhadia | ACTION: Logged in successfully
