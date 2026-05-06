@@ -1,16 +1,18 @@
-# 🛡️ Department File Guardian & Defender (v5.0)
+# 🛡️ Aegis Advanced Version Control & Security (v6.0)
 
-A high-security, blockchain-based file integrity system developed in C++ using advanced Object-Oriented Programming (OOP) principles.
+A professional-grade, creative, and blockchain-based Document Management System (DMS) developed in C++ using advanced Object-Oriented Programming (OOP) principles.
 
 ## 🚀 Overview
-The **File Integrity Guardian** is designed to protect sensitive department documents. It creates a "Chain of Trust" where each file's security is linked to the previous one. If even a single bit of data is altered without authorization, the entire chain breaks, alerting the administrator.
+**Aegis** is a high-security vault for sensitive documents. It combines traditional document management (CRUD) with a "Chain of Trust" architecture. Every file modification is sealed into a blockchain ledger, ensuring absolute data integrity. If a file is tampered with, the system detects it instantly and offers self-healing capabilities.
 
 ### Key Features
-- **Blockchain Data Integrity**: Uses a linked-hash structure to detect any unauthorized file modification.
-- **Role-Based Access Control (RBAC)**: Distinct permissions for `Admin` and `Staff` users.
-- **Self-Healing System**: Automatically restores corrupted or tampered files from a hidden secure backup.
-- **OTP Authorization**: Requires a One-Time Password to authorize legitimate updates to documents.
-- **Custom Cyber Algorithm**: Implements a custom bit-rotation and XOR-based hashing engine.
+- **Full CRUD Management**: Create, View, Update, Overwrite, Rename, and Delete documents in the `Docs` directory.
+*   **Blockchain Data Integrity**: Uses a linked-hash structure where every modification re-seals the entire chain.
+*   **Persistent User Management**: Securely stores users and their roles with hashed password protection.
+- **Role-Based Access Control (RBAC)**: Distinct permissions for `Level 4 (Admin)` and `Level 2 (Staff)` users.
+- **Creative Terminal UI**: ANSI-colored interface, ASCII banners, and professional loading animations.
+*   **Secure Audit Logging**: Every system action is recorded in a protected `audit.log` for forensic tracking.
+- **OTP Authorization**: Destructive actions require a One-Time Password to prevent accidental changes.
 
 ---
 
@@ -41,16 +43,34 @@ classDiagram
         -string fileHash
         -string prevBlockHash
         -string ownBlockHash
+        -time_t timestamp
+        -string identifier
         +generateOwnHash()
     }
 
-    class Guardian {
+    class Aegis {
         -vector~FileBlock~ chain
         +initialize()
         +verify()
         +viewFile(name)
-        +authorizedUpdate(name, data)
-        +restoreAll()
+        +authorizedDelete(name)
+        +authorizedRename(old, new)
+        +searchContent(query)
+    }
+
+    class UserManager {
+        -vector~User*~ users
+        -User* currentUser
+        +login(user, pass) bool
+        +registerUser(user, pass, role) bool
+        +logout()
+    }
+
+    class AuditLogger {
+        <<Singleton>>
+        -string logFile
+        +log(user, action)
+        +viewLogs()
     }
 
     class Hasher {
@@ -61,9 +81,12 @@ classDiagram
 
     User <|-- Admin
     User <|-- Staff
-    Guardian o-- FileBlock
+    Aegis o-- FileBlock
+    UserManager o-- User
+    Aegis ..> AuditLogger
+    UserManager ..> AuditLogger
     FileBlock ..> Hasher
-    Guardian ..> Hasher
+    Aegis ..> Hasher
 ```
 
 ---
@@ -72,27 +95,11 @@ classDiagram
 
 | Concept | Implementation in this Project |
 |---------|--------------------------------|
-| **Abstraction** | The `User` class is abstract, ensuring no "generic" users can exist. |
-| **Inheritance** | `Admin` and `Staff` inherit from the `User` base class. |
-| **Polymorphism** | Dynamic binding via `User*` pointers to handle role-specific menus. |
-| **Encapsulation** | Private data members in `FileBlock` and `Guardian` protect internal states. |
-| **Composition** | The `Guardian` class "owns" a collection of `FileBlock` objects. |
-
----
-
-## 🔐 Cyber Algorithms
-
-### 1. Blockchain Linking
-Each file is represented by a `FileBlock`. The hash of `Block N` is calculated as:
-`Hash(FileName + FileSize + FileData + Hash_of_Block_N-1)`
-This ensures that changing one file invalidates all subsequent blocks.
-
-### 2. Custom Bit-Rotation Hash
-The `Hasher` class uses a custom mixing algorithm:
-```cpp
-hash = ((hash << 5) + hash) + data;
-hash ^= (hash >> 3); // Bitwise diffusion
-```
+| **Abstraction** | `User` class is abstract; `AuditLogger` uses a private constructor (Singleton). |
+| **Inheritance** | `Admin` and `Staff` extend `User` to define role-specific permissions. |
+| **Polymorphism** | Dynamic menu rendering based on `User*` pointers and virtual methods. |
+| **Encapsulation** | Strict data hiding in `FileBlock`, `UserManager`, and `AuditLogger`. |
+| **Singleton** | The `AuditLogger` ensures a single point of truth for system activity. |
 
 ---
 
@@ -101,13 +108,16 @@ hash ^= (hash >> 3); // Bitwise diffusion
 1. **Prerequisites**: G++ compiler with C++17 support.
 2. **Compile**: 
    ```bash
-   g++ main.cpp -o Guardian.exe -std=c++17
+   g++ main.cpp -o Aegis.exe -std=c++17
    ```
 3. **Run**:
    ```bash
-   .\Guardian.exe
+   .\Aegis.exe
    ```
 
 ### Default Credentials:
 - **Admin**: `admin` / `admin123`
+- **Admin 2**: `adminrafay` / `rafay123`
 - **Staff**: `staff` / `staff123`
+- **Admin Secret Key**: `guardian2026` (For registration)
+

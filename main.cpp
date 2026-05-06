@@ -1,4 +1,4 @@
-#include "Guardian.h"
+#include "Aegis.h"
 #include "UserManager.h"
 #include <iostream>
 #include <iomanip>
@@ -77,8 +77,8 @@ void handleSignup() {
     system("pause");
 }
 
-int selectFile(Guardian& guardian) {
-    auto files = guardian.getFileList();
+int selectFile(Aegis& aegis) {
+    auto files = aegis.getFileList();
     if (files.empty()) {
         Utils::printWarning("Vault is empty. No documents found.");
         return -1;
@@ -106,7 +106,7 @@ string getMultilineInput() {
 
 int main() {
     Utils::setupConsole();
-    Guardian guardian;
+    Aegis aegis;
     int choice;
 
     while (true) {
@@ -126,7 +126,7 @@ int main() {
             continue;
         }
 
-        guardian.loadLedger();
+        aegis.loadLedger();
         User* currentUser = userMgr.getCurrentUser();
 
         Utils::clear();
@@ -171,61 +171,61 @@ int main() {
 
         switch (choice) {
             case 1: {
-                int idx = selectFile(guardian);
-                if (idx != -1) guardian.viewFile(guardian.getFileList()[idx]);
+                int idx = selectFile(aegis);
+                if (idx != -1) aegis.viewFile(aegis.getFileList()[idx]);
                 break;
             }
             case 2: {
                 string query;
                 cout << "  Enter Scan Query: "; cin.ignore(); getline(cin, query);
-                guardian.searchContent(query);
+                aegis.searchContent(query);
                 break;
             }
-            case 3: guardian.verify(); break;
+            case 3: aegis.verify(); break;
             case 4: {
                 string filename; 
                 cout << "  Target Filename: "; cin >> filename;
                 cout << "  Enter Content (Ctrl+Z -> Enter to Finish):\n";
-                guardian.addNewFile(filename, getMultilineInput());
+                aegis.addNewFile(filename, getMultilineInput());
                 break;
             }
             case 5: {
-                int idx = selectFile(guardian);
+                int idx = selectFile(aegis);
                 if (idx != -1) {
                     cout << "  Enter Data to Append (Ctrl+Z -> Enter to Finish):\n";
-                    guardian.authorizedUpdate(guardian.getFileList()[idx], getMultilineInput());
+                    aegis.authorizedUpdate(aegis.getFileList()[idx], getMultilineInput());
                 }
                 break;
             }
             case 6: {
-                int idx = selectFile(guardian);
+                int idx = selectFile(aegis);
                 if (idx != -1) {
                     cout << "  Enter New Content (Ctrl+Z -> Enter to Finish):\n";
-                    guardian.authorizedOverwrite(guardian.getFileList()[idx], getMultilineInput());
+                    aegis.authorizedOverwrite(aegis.getFileList()[idx], getMultilineInput());
                 }
                 break;
             }
             case 7: {
-                int idx = selectFile(guardian);
+                int idx = selectFile(aegis);
                 if (idx != -1) {
                     string newName;
                     cout << "  New Filename: "; cin >> newName;
-                    guardian.authorizedRename(guardian.getFileList()[idx], newName);
+                    aegis.authorizedRename(aegis.getFileList()[idx], newName);
                 }
                 break;
             }
             case 8:
                 if (currentUser->canAccessAdminTools()) {
-                    int idx = selectFile(guardian);
-                    if (idx != -1) guardian.authorizedDelete(guardian.getFileList()[idx]);
+                    int idx = selectFile(aegis);
+                    if (idx != -1) aegis.authorizedDelete(aegis.getFileList()[idx]);
                 } else Utils::printError("Restricted Operation: Admins only.");
                 break;
             case 9:
-                if (currentUser->canAccessAdminTools()) guardian.restoreAll();
+                if (currentUser->canAccessAdminTools()) aegis.restoreAll();
                 else Utils::printError("Restricted Operation: Admins only.");
                 break;
             case 10:
-                if (currentUser->canAccessAdminTools()) guardian.initialize();
+                if (currentUser->canAccessAdminTools()) aegis.initialize();
                 else Utils::printError("Restricted Operation: Admins only.");
                 break;
             case 11:

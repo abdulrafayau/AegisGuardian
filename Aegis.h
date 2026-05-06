@@ -1,5 +1,5 @@
-#ifndef GUARDIAN_H
-#define GUARDIAN_H
+#ifndef AEGIS_H
+#define AEGIS_H
 
 #include <vector>
 #include <fstream>
@@ -12,12 +12,12 @@
 
 namespace fs = std::filesystem;
 
-class Guardian {
+class Aegis {
 private:
     std::vector<FileBlock> chain;
-    const std::string LEDGER_NAME = "ledger.guardian";
+    const std::string LEDGER_NAME = "ledger.aegis";
     const std::string BACKUP_DIR = ".backups";
-    const std::string DOCS_DIR = "Department_Docs";
+    const std::string DOCS_DIR = "Docs";
 
     std::string generateOTP() {
         std::random_device rd;
@@ -309,7 +309,7 @@ public:
         }
 
         Utils::printLoadingBar("Verifying Blockchain Integrity", 800);
-        Utils::printHeader("DEPARTMENT DOCUMENTS INTEGRITY REPORT");
+        Utils::printHeader("AEGIS DOCUMENTS INTEGRITY REPORT");
         bool breach = false;
         std::string expectedPrev = "00000000";
 
