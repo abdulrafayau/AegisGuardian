@@ -121,3 +121,9 @@ classDiagram
 - **Staff**: `staff` / `staff123`
 - **Admin Secret Key**: `guardian2026` (For registration)
 
+### Group Members :
+- Abdul Rafay 
+- Hadia Aziz
+- Huda Tariq
+- Faizan Iqbal
+
