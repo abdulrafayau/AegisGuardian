@@ -21,11 +21,11 @@ A professional-grade, creative, and blockchain-based Document Management System 
 **Aegis Guardian** is an advanced, terminal-based Document Security and Management Operating System built entirely in C++. Designed as a secure vault simulation, it features Role-Based Access Control (RBAC), self-healing file integrity algorithms, and a sleek ANSI-colored Command Line Interface.
 
 
-### Group Members :
-- Abdul Rafay 
-- Hadia Aziz
-- Huda Tariq
-- Faizan Iqbal
+### 👥 Contributors & Group Members
+- **Abdul Rafay** - Core Architecture & Session Control
+- **Hadia Aziz** - User Management & Authentication
+- **Huda Tariq** - Vault Storage & Content Engine
+- **Faizan Iqbal** - Security, Backups & Audit Auditing
 
 
 ```markdown
